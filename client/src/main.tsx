@@ -1,13 +1,12 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
+import "./styles/reset.css";
+import "@radix-ui/themes/styles.css";
 import App from "./App.tsx";
-import { Provider } from "./components/ui/provider.tsx";
+import { Theme } from "@radix-ui/themes";
 
 createRoot(document.getElementById("root")!).render(
-    <StrictMode>
-        <Provider>
-            <App />
-        </Provider>
-    </StrictMode>
+    <Theme>
+        <App />
+    </Theme>
 );
