@@ -1,17 +1,23 @@
 import "./styles/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login";
+import HomeLayout from "./components/home/Layout";
+import BookmarkLayout from "./components/bookmark/Layout";
+import ProjectLayout from "./components/project/Layout";
+import LoginLayout from "./components/login/Layout";
 import Layout from "./Layout";
 
 function App() {
     return (
         <>
             <BrowserRouter>
-                <Routes>
-                    <Route path='/login' element={<Login />} />
-                </Routes>
-
-                <Layout />
+                <Layout>
+                    <Routes>
+                        <Route path='/' element={<HomeLayout />} />
+                        <Route path='/login' element={<LoginLayout />} />
+                        <Route path='/bookmark' element={<BookmarkLayout />} />
+                        <Route path='/project' element={<ProjectLayout />} />
+                    </Routes>
+                </Layout>
             </BrowserRouter>
         </>
     );

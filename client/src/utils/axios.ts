@@ -5,6 +5,7 @@ import axios from "axios";
 
 const defaultOptions = {
     baseURL: import.meta.env.VITE_API_URL,
+    // baseURL: "/api",
     headers: {
         "Content-Type": "application/json",
         // "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",

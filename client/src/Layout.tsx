@@ -1,29 +1,19 @@
-import { useEffect, useState } from "react";
 import SideBar from "./components/SideBar";
-import LinkCard from "./components/LinkCard";
-import { API_LINKS } from "./service/link";
-import _ from "lodash";
-import { Link } from "./types/link";
+import CreateLinkDialog from "./components/link/dialog/Create";
+import EditLinkDialog from "./components/link/dialog/Edit";
 
-const Layout = () => {
-    const [data, setData] = useState();
-    const getLinks = async () => {
-        const res = await API_LINKS();
-        setData(res.data);
-    };
-
-    useEffect(() => {
-        getLinks();
-    }, []);
-
+const Layout = ({ children }: any) => {
     return (
-        <div className='h-screen flex'>
+        <div className='h-screen flex w-screen bg-[radial-gradient(145.05%_100%_at_50%_0%,#1D2B41_0%,#020509_57.38%,#0F1A29_88.16%)]'>
+            {/* 메뉴바 */}
             <SideBar />
-            <div className='flex gap-4 p-[1rem]'>
-                {_.map(data, (link: Link) => {
-                    return <LinkCard link={link} />;
-                })}
-            </div>
+
+            {/* 페이지 컴포넌트 */}
+            <div className='size-full'>{children}</div>
+
+            {/* 생성/수정 dialog */}
+            <EditLinkDialog />
+            <CreateLinkDialog />
         </div>
     );
 };
