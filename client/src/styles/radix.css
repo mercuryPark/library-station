@@ -1,0 +1,18 @@
+#dialog input::placeholder {
+    color: #9ca3af;
+}
+
+#dialog .rt-TextFieldRoot:where(.rt-variant-surface) {
+    --text-field-selection-color: #9ca3af;
+    --text-field-focus-color: #9ca3af;
+}
+
+.rt-TextFieldRoot:where(.rt-r-size-2) :where(.rt-TextFieldInput) {
+    -webkit-text-fill-color: white !important;
+    background-color: #18181b !important;
+}
+
+.rt-TextFieldSlot {
+    background-color: #18181b !important;
+    color: #9ca3af !important;
+}

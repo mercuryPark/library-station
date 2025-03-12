@@ -1,13 +1,12 @@
 import { Dialog, Button, Flex, Text, TextField } from "@radix-ui/themes";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
-import { API_GET_THUMBNAIL_IMAGE, API_UPDATE_LINKS } from "@/service/link";
-import { useForm, SubmitHandler } from "react-hook-form";
-import _ from "lodash";
+import { API_GET_THUMBNAIL_IMAGE } from "@/service/link";
+import { useForm } from "react-hook-form";
 import { editDialogState } from "@/state/dialog";
 import { useAtom } from "jotai";
 import { LinkDialog } from "@/types/dialog";
-import { linksState } from "@/state/links";
+import useLinks from "@/hooks/useLinks";
 
 type Inputs = {
     title: string;
@@ -25,42 +24,13 @@ const UpdateLinkDialog = () => {
         // formState: { errors },
     } = useForm<Inputs>();
 
-    const [, setLinks]: any = useAtom(linksState);
     const [editDialog, setEditDialog]: any =
         useAtom<LinkDialog>(editDialogState);
 
-    // 새 링크 저장
-    const handleClickEditLinks: SubmitHandler<Inputs> = async (data: any) => {
-        const params = {
-            id: data.id,
-            urls: {
-                official: data.official,
-                package: data.package ?? null,
-                github: data.github ?? null,
-            },
-            bookmark: data.bookmark,
-            title: data.title,
-            created_at: data.created_at,
-        };
-        try {
-            const res = await API_UPDATE_LINKS(params.id, params);
+    const { updateLink } = useLinks();
 
-            if (res && res.data !== undefined) {
-                setLinks((prev: any) => {
-                    return _.map(prev, (link: any) => {
-                        if (link.id === res.data.id) {
-                            return res.data;
-                        }
-
-                        return link;
-                    });
-                });
-
-                setEditDialog({ data: null, visible: false });
-            }
-        } catch (err) {
-            console.log(err);
-        }
+    const handleSumitUpdateLink = async (data: any) => {
+        await updateLink(editDialog.data.id, data);
     };
 
     // og tag로 썸네일 가져오기
@@ -96,8 +66,12 @@ const UpdateLinkDialog = () => {
                 <Button>Edit profile</Button>
             </Dialog.Trigger> */}
 
-            <Dialog.Content maxWidth='550px'>
-                <form onSubmit={handleSubmit(handleClickEditLinks)}>
+            <Dialog.Content
+                id='dialog'
+                maxWidth='550px'
+                className='!bg-[#18181b] text-[#ecedee] !shadow-none'
+            >
+                <form onSubmit={handleSubmit(handleSumitUpdateLink)}>
                     <Flex justify={"between"}>
                         <div>
                             <Dialog.Title>라이브러리 링크 수정</Dialog.Title>
@@ -106,7 +80,7 @@ const UpdateLinkDialog = () => {
                             </Dialog.Description>
                         </div>
 
-                        <div className='flex items-center justify-center w-[80px] rounded-lg ring-1 ring-gray-200 shadow-sm'>
+                        <div className='flex items-center justify-center w-[80px] rounded-lg ring-1 ring-[#3f3f46] shadow-sm'>
                             {thumbnailImage !== null ? (
                                 <img
                                     src={thumbnailImage}
@@ -124,7 +98,7 @@ const UpdateLinkDialog = () => {
                                     <ArrowPathIcon
                                         width={15}
                                         height={15}
-                                        color='gray'
+                                        color='#ecedee'
                                     />
                                 </button>
                             )}
@@ -140,6 +114,7 @@ const UpdateLinkDialog = () => {
                             <TextField.Root
                                 {...register("title", { required: true })}
                                 placeholder='Enter your full name'
+                                className='!bg-[#18181b] !text-[#ecedee] shadow-none !ring-1 ring-[#3f3f46] '
                             />
                         </label>
                         <label>
@@ -149,7 +124,7 @@ const UpdateLinkDialog = () => {
                                 </Text>
                                 <button
                                     type='button'
-                                    className='text-[10px] font-semibold text-blue-600'
+                                    className='text-[10px] font-semibold text-blue-400'
                                     onClick={getThumbnailImage}
                                 >
                                     썸네일 미리보기
@@ -158,6 +133,7 @@ const UpdateLinkDialog = () => {
                             <TextField.Root
                                 {...register("official", { required: true })}
                                 placeholder='Enter your full name'
+                                className='!bg-[#18181b] !text-[#ecedee] shadow-none !ring-1 ring-[#3f3f46]'
                             />
                         </label>
                         <label>
@@ -167,6 +143,7 @@ const UpdateLinkDialog = () => {
                             <TextField.Root
                                 {...register("package")}
                                 placeholder='Enter your email'
+                                className='!bg-[#18181b] !text-[#ecedee] shadow-none !ring-1 ring-[#3f3f46]'
                             />
                         </label>
 
@@ -177,6 +154,7 @@ const UpdateLinkDialog = () => {
                             <TextField.Root
                                 {...register("github")}
                                 placeholder='Enter your email'
+                                className='!bg-[#18181b] !text-[#ecedee] shadow-none !ring-1 ring-[#3f3f46]'
                             />
                         </label>
                     </Flex>
@@ -187,7 +165,7 @@ const UpdateLinkDialog = () => {
                                 setEditDialog({ data: null, visible: false });
                             }}
                             variant='soft'
-                            color='gray'
+                            color='red'
                             type='button'
                         >
                             Cancel

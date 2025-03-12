@@ -1,4 +1,5 @@
 import "./styles/App.css";
+import "./styles/radix.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomeLayout from "./components/home/Layout";
 import BookmarkLayout from "./components/bookmark/Layout";
@@ -16,6 +17,10 @@ function App() {
                         <Route path='/login' element={<LoginLayout />} />
                         <Route path='/bookmark' element={<BookmarkLayout />} />
                         <Route path='/project' element={<ProjectLayout />} />
+                        <Route
+                            path='/project/:id'
+                            element={<ProjectLayout />}
+                        />
                     </Routes>
                 </Layout>
             </BrowserRouter>

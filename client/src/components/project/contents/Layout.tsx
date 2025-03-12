@@ -1,44 +1,34 @@
-import { useEffect, useState } from "react";
-import Search from "../Search";
-import LinkCard from "../link/Card";
-import _ from "lodash";
-import { Link } from "@/types/link";
 import useLinks from "@/hooks/useLinks";
+import { Link } from "@/types/link";
+import _ from "lodash";
+import { useState } from "react";
+import LinkCard from "@/components/link/Card";
 
-const HomeLayout = () => {
+const ProjectContentsLayout = ({
+    linksByProject,
+}: {
+    linksByProject: any[];
+}) => {
     const [activeCard, setActiveCard] = useState<Link | null>(null);
-    const {
-        links,
-        filteredLinks,
-        deleteLink,
-        openEditDialog,
-        openLink,
-        getLinks,
-    } = useLinks();
-
-    useEffect(() => {
-        getLinks();
-    }, []);
+    const { openLink, openEditDialog, deleteLink } = useLinks();
 
     return (
-        <div className='p-[1rem] flex flex-col gap-3 w-full h-full overflow-y-auto'>
-            <Search />
-
+        <div className='col-span-5 p-[1rem] overflow-y-auto'>
             <div className='flex flex-wrap gap-4'>
-                {_.map(filteredLinks ?? links, (link: Link | null) => {
+                {_.map(linksByProject, (item: any) => {
                     return (
                         <div
-                            key={`link-${link?.id}`}
+                            key={`link-${item?.id}`}
                             className='relative'
                             onMouseOver={() => {
-                                setActiveCard(link);
+                                setActiveCard(item.links);
                             }}
                             onMouseLeave={() => {
                                 setActiveCard(null);
                             }}
                         >
                             <LinkCard
-                                link={link}
+                                link={item.links}
                                 activeCard={activeCard}
                                 openLinkPage={(link: any) => {
                                     openLink(link);
@@ -58,4 +48,4 @@ const HomeLayout = () => {
     );
 };
 
-export default HomeLayout;
+export default ProjectContentsLayout;

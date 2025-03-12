@@ -9,6 +9,7 @@ app.use(express.json());
 
 // 라우트 설정
 app.use("/links", require("./routes/links"));
+app.use("/projects", require("./routes/projects"));
 app.use("/test", require("./routes/test"));
 
 app.listen(process.env.PORT, () => {

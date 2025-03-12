@@ -77,7 +77,7 @@ router.post("/", async (req, res) => {
         const newLink = {
             ...req.body,
             id: uniqueId,
-            bookmark: false,
+            bookmark: req.body.bookmark,
             og_data: {
                 title: ogData.title,
                 thumbnail_url: ogData.image,

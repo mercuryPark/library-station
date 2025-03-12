@@ -43,9 +43,9 @@ const Search = () => {
     }, [links]);
 
     return (
-        <div className='w-full'>
+        <div className='w-full ring-1 ring-gray-700 '>
             <TextField.Root
-                className='w-full bg-transparent px-3 py-2 outline-none'
+                className='w-full bg-transparent px-3 py-2 outline-none rounded-md'
                 placeholder='라이브러리 검색...'
                 onChange={handleInputChange}
             >

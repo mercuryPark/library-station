@@ -1,12 +1,11 @@
 import { Dialog, Button, Flex, Text, TextField } from "@radix-ui/themes";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
-import { API_GET_THUMBNAIL_IMAGE, API_SAVE_LINKS } from "@/service/link";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { API_GET_THUMBNAIL_IMAGE } from "@/service/link";
+import { useForm } from "react-hook-form";
 import { useAtom } from "jotai";
 import { creatDialogState } from "@/state/dialog";
-import { linksState } from "@/state/links";
-import { useNavigate } from "react-router-dom";
+import useLinks from "@/hooks/useLinks";
 
 type Inputs = {
     title: string;
@@ -36,39 +35,8 @@ const CreateLinkDialog = () => {
         defaultValues,
     });
 
-    const navigation = useNavigate();
-
-    const [, setLinks]: any = useAtom(linksState);
     const [creatDialog, setCreatDialog] = useAtom(creatDialogState);
-
-    // 새 링크 저장
-    const handleClickSaveLinks: SubmitHandler<Inputs> = async (data: any) => {
-        const params = {
-            urls: {
-                official: data.official,
-                package: data.package ?? null,
-                github: data.github ?? null,
-            },
-            bookmark: data.bookmark,
-            title: data.title,
-        };
-        try {
-            const res = await API_SAVE_LINKS(params);
-
-            if (res && res.data.data != undefined) {
-                if (window.location.href !== "/") {
-                    navigation("/");
-                }
-                setLinks((prev: any) => {
-                    return [res.data.data, ...prev];
-                });
-
-                setCreatDialog({ visible: false });
-            }
-        } catch (err) {
-            console.log(err);
-        }
-    };
+    const { addLink } = useLinks();
 
     // og tag로 썸네일 가져오기
     const getThumbnailImage = async () => {
@@ -96,8 +64,12 @@ const CreateLinkDialog = () => {
                 <Button>Edit profile</Button>
             </Dialog.Trigger> */}
 
-            <Dialog.Content maxWidth='550px'>
-                <form onSubmit={handleSubmit(handleClickSaveLinks)}>
+            <Dialog.Content
+                id='dialog'
+                maxWidth='550px'
+                className='!bg-[#18181b] text-[#ecedee] !shadow-none'
+            >
+                <form onSubmit={handleSubmit(addLink)}>
                     <Flex justify={"between"}>
                         <div>
                             <Dialog.Title>라이브러리 링크 생성</Dialog.Title>
@@ -106,7 +78,7 @@ const CreateLinkDialog = () => {
                             </Dialog.Description>
                         </div>
 
-                        <div className='flex items-center justify-center w-[80px] rounded-lg ring-1 ring-gray-200 shadow-sm'>
+                        <div className='flex items-center justify-center w-[80px] rounded-lg ring-1 ring-[#3f3f46] shadow-sm'>
                             {thumbnailImage !== null ? (
                                 <img
                                     src={thumbnailImage}
@@ -125,7 +97,7 @@ const CreateLinkDialog = () => {
                                     <ArrowPathIcon
                                         width={15}
                                         height={15}
-                                        color='gray'
+                                        color='#ecedee'
                                     />
                                 </button>
                             )}
@@ -141,6 +113,7 @@ const CreateLinkDialog = () => {
                             <TextField.Root
                                 {...register("title", { required: true })}
                                 placeholder='Enter your full name'
+                                className='!bg-[#18181b] !text-[#ecedee] shadow-none !ring-1 ring-[#3f3f46]'
                             />
                         </label>
                         <label>
@@ -150,7 +123,7 @@ const CreateLinkDialog = () => {
                                 </Text>
                                 <button
                                     type='button'
-                                    className='text-[10px] font-semibold text-blue-600'
+                                    className='text-[10px] font-semibold text-blue-400'
                                     onClick={getThumbnailImage}
                                 >
                                     썸네일 미리보기
@@ -159,6 +132,7 @@ const CreateLinkDialog = () => {
                             <TextField.Root
                                 {...register("official", { required: true })}
                                 placeholder='Enter your full name'
+                                className='!bg-[#18181b] !text-[#ecedee] shadow-none !ring-1 ring-[#3f3f46] [&_input]:!bg-[#18181b] [&_input]:!text-[#ecedee] [&_input:autofill]:!bg-[#18181b] [&_input:autofill]:!text-[#ecedee] [&_input:-webkit-autofill]:!bg-[#18181b] [&_input:-webkit-autofill]:!text-[#ecedee] [&_input:-webkit-autofill]:!box-shadow-[0_0_0_30px_#18181b_inset] [&_input:-webkit-autofill]:!-webkit-text-fill-color-[#ecedee]'
                             />
                         </label>
                         <label>
@@ -168,6 +142,7 @@ const CreateLinkDialog = () => {
                             <TextField.Root
                                 {...register("package")}
                                 placeholder='Enter your email'
+                                className='!bg-[#18181b] !text-[#ecedee] shadow-none !ring-1 ring-[#3f3f46] [&_input]:!bg-[#18181b] [&_input]:!text-[#ecedee] [&_input:autofill]:!bg-[#18181b] [&_input:autofill]:!text-[#ecedee] [&_input:-webkit-autofill]:!bg-[#18181b] [&_input:-webkit-autofill]:!text-[#ecedee] [&_input:-webkit-autofill]:!box-shadow-[0_0_0_30px_#18181b_inset] [&_input:-webkit-autofill]:!-webkit-text-fill-color-[#ecedee]'
                             />
                         </label>
 
@@ -178,6 +153,7 @@ const CreateLinkDialog = () => {
                             <TextField.Root
                                 {...register("github")}
                                 placeholder='Enter your email'
+                                className='!bg-[#18181b] !text-[#ecedee] shadow-none !ring-1 ring-[#3f3f46] [&_input]:!bg-[#18181b] [&_input]:!text-[#ecedee] [&_input:autofill]:!bg-[#18181b] [&_input:autofill]:!text-[#ecedee] [&_input:-webkit-autofill]:!bg-[#18181b] [&_input:-webkit-autofill]:!text-[#ecedee] [&_input:-webkit-autofill]:!box-shadow-[0_0_0_30px_#18181b_inset] [&_input:-webkit-autofill]:!-webkit-text-fill-color-[#ecedee]'
                             />
                         </label>
 
@@ -199,7 +175,7 @@ const CreateLinkDialog = () => {
                                 setCreatDialog({ visible: false });
                             }}
                             variant='soft'
-                            color='gray'
+                            color='red'
                             type='button'
                         >
                             Cancel

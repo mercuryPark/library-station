@@ -13,7 +13,13 @@ import { useAtom, useAtomValue } from "jotai";
 import _ from "lodash";
 import { useNavigate } from "react-router-dom";
 
-const useLinks = () => {
+interface UseLinksOptions {
+    setLoading?: (loading: boolean) => void;
+}
+
+const useLinks = (options: UseLinksOptions = {}) => {
+    const { setLoading } = options;
+
     const [links, setLinks]: any = useAtom<any>(linksState);
     const filteredLinks: any = useAtomValue<any>(filteredLinksState);
     const [, setEditDialog]: any = useAtom<LinkDialog>(editDialogState);
@@ -26,6 +32,8 @@ const useLinks = () => {
             setLinks(res.data);
         } catch (error) {
             console.log(error);
+        } finally {
+            setLoading?.(false);
         }
     };
 
@@ -52,7 +60,7 @@ const useLinks = () => {
     };
 
     // 링크 수정
-    const updateLink = async (data: any) => {
+    const updateLink = async (id: string, data: any) => {
         const params = {
             id: data.id,
             urls: {
@@ -65,17 +73,21 @@ const useLinks = () => {
             created_at: data.created_at,
         };
         try {
-            const res = await API_UPDATE_LINKS(params.id, params);
+            const res = await API_UPDATE_LINKS(id, params);
 
             if (res && res.data !== undefined) {
                 setLinks((prev: any) => {
-                    return _.map(prev, (link: any) => {
-                        if (link.id === res.data.id) {
-                            return res.data;
-                        }
+                    return _.orderBy(
+                        _.map(prev, (link: any) => {
+                            if (link.id === res.data.id) {
+                                return res.data;
+                            }
 
-                        return link;
-                    });
+                            return link;
+                        }),
+                        ["updated_at"],
+                        ["desc"]
+                    );
                 });
 
                 setEditDialog({ data: null, visible: false });
@@ -93,7 +105,7 @@ const useLinks = () => {
                 package: data.package ?? null,
                 github: data.github ?? null,
             },
-            bookmark: false,
+            bookmark: data.bookmark,
             title: data.title,
         };
         try {
@@ -137,7 +149,6 @@ const useLinks = () => {
                 setLinks((prev: any) => {
                     return _.map(prev, (link: any) => {
                         if (link?.id === res?.data.id) {
-                            console.log(res.data.bookmark);
                             return {
                                 ...link,
                                 bookmark: res.data.bookmark,

@@ -2,7 +2,11 @@ import { Link } from "@/types/link";
 import { useState } from "react";
 import { GlobeAltIcon } from "@heroicons/react/24/solid";
 import { StarIcon } from "@heroicons/react/24/outline";
-import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
+import {
+    PencilSquareIcon,
+    TrashIcon,
+    FireIcon,
+} from "@heroicons/react/24/outline";
 import { motion } from "framer-motion";
 import { AlertDialog, Button, Flex } from "@radix-ui/themes";
 import useLinks from "@/hooks/useLinks";
@@ -43,10 +47,19 @@ const LinkCard = ({
                     }}
                 />
             ) : (
-                <div className='flex items-center justify-center h-full bg-[#070c14] rounded-lg'>
-                    <p className='text-sm font-semibold text-white truncate mx-6'>
-                        {link?.title}
-                    </p>
+                <div className='flex w-full gap-2 items-center justify-center h-full bg-[#070c14] rounded-lg line-clamp-2 '>
+                    <div className='mx-6 w-full flex  gap-1.5 items-center justify-center h-full line-clamp-2 '>
+                        <p className='text-sm font-light line-clamp-2  text-white'>
+                            {link?.title}
+                        </p>
+                        <div className='shrink'>
+                            <FireIcon
+                                width={26}
+                                height={26}
+                                className='text-red-400 '
+                            />
+                        </div>
+                    </div>
                 </div>
             )}
 
