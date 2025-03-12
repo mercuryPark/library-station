@@ -24,7 +24,7 @@ const HomeLayout = () => {
         <div className='p-[1rem] flex flex-col gap-3 w-full h-full overflow-y-auto'>
             <Search />
 
-            <div className='flex flex-wrap gap-4'>
+            <div className='grid grid-cols-7 max-2xl:grid-cols-6 max-xl:grid-cols-5 max-lg:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2 gap-4'>
                 {_.map(filteredLinks ?? links, (link: Link | null) => {
                     return (
                         <div

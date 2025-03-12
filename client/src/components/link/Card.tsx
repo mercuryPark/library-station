@@ -35,7 +35,7 @@ const LinkCard = ({
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: "100%", opacity: 0 }}
             transition={{ type: "tween", duration: 1.2 }}
-            className='relative  w-[200px] h-[270px] cursor-pointer shadow-md ring-1 ring-gray-700 rounded-lg'
+            className='relative  h-[270px] cursor-pointer shadow-md ring-1 ring-gray-700 rounded-lg'
         >
             {loadThumbnail && link?.og_data.thumbnail_url !== null ? (
                 <img

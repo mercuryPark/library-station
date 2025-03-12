@@ -4,20 +4,23 @@ import ProjectContentsLayout from "./contents/Layout";
 import ProjectListLayout from "./list/Layout";
 import useProject from "@/hooks/useProject";
 import CreateProjectDialog from "./dialog/Create";
-
+import EditProjectDialog from "./dialog/Edit";
 const ProjectLayout = () => {
     const { id } = useParams<{ id: string }>();
     const {
         projects,
         getProjects,
         openDialog,
-        projectDialog,
+        openEditDialog,
+        createDialog,
+        editDialog,
         closeDialog,
         createProject,
         deleteProject,
         addLinksToProject,
         getLinksByProject,
         linksByProject,
+        updateProject,
     } = useProject();
 
     useEffect(() => {
@@ -36,13 +39,19 @@ const ProjectLayout = () => {
                 projects={projects}
                 openDialog={openDialog}
                 deleteProject={deleteProject}
+                openEditDialog={openEditDialog}
             />
             <ProjectContentsLayout linksByProject={linksByProject} />
 
+            <EditProjectDialog
+                dialog={editDialog}
+                updateProject={updateProject}
+                closeDialog={() => closeDialog("edit")}
+            />
             {/* dialog */}
             <CreateProjectDialog
-                dialog={projectDialog}
-                closeDialog={closeDialog}
+                dialog={createDialog}
+                closeDialog={() => closeDialog("project")}
                 createProject={createProject}
                 addLinksToProject={addLinksToProject}
             />

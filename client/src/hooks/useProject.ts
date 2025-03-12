@@ -14,24 +14,44 @@ import _ from "lodash";
 const useProject = () => {
     const { links, getLinks } = useLinks();
     const [projects, setProjects] = useState<any[]>([]);
-    const [projectDialog, setProjectDialog] = useState({
+    const [createDialog, setCreateDialog] = useState({
         visible: false,
         data: null,
     });
+
+    const [editDialog, setEditDialog] = useState({
+        visible: false,
+        data: null,
+    });
+
     const [linksByProject, setLinksByProject] = useState<any[]>([]);
 
     const openDialog = () => {
-        setProjectDialog({
+        setCreateDialog({
             visible: true,
             data: null,
         });
     };
 
-    const closeDialog = () => {
-        setProjectDialog({
-            visible: false,
-            data: null,
+    const openEditDialog = (id: string, data: any) => {
+        setEditDialog({
+            visible: true,
+            data: { ...data, id },
         });
+    };
+
+    const closeDialog = (type: string) => {
+        if (type === "project") {
+            setCreateDialog({
+                visible: false,
+                data: null,
+            });
+        } else if (type === "edit") {
+            setEditDialog({
+                visible: false,
+                data: null,
+            });
+        }
     };
 
     const getProjects = async () => {
@@ -57,7 +77,7 @@ const useProject = () => {
         setProjects((prev) => {
             return prev.map((project) => {
                 if (project.id === id) {
-                    return res.data;
+                    return res;
                 }
 
                 return project;
@@ -116,8 +136,10 @@ const useProject = () => {
         linksByProject,
         getProjects,
         openDialog,
+        openEditDialog,
         closeDialog,
-        projectDialog,
+        createDialog,
+        editDialog,
         createProject,
         updateProject,
         deleteProject,

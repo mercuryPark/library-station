@@ -1,18 +1,6 @@
 import { Dialog, Button, Flex, Text, TextField } from "@radix-ui/themes";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useAtomValue } from "jotai";
-import { linksState } from "@/state/links";
-import RadioCard from "@/components/link/RadioCard";
-import _ from "lodash";
-
-interface Project {
-    id: string;
-    name: string;
-    description?: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
 
 type Inputs = {
     title: string;
@@ -24,39 +12,28 @@ const defaultValues: Inputs = {
     description: "",
 };
 
-const CreateProjectDialog = ({
+const EditProjectDialog = ({
     dialog,
     closeDialog,
-    createProject,
-    addLinksToProject,
+    updateProject,
 }: {
     dialog: any;
     closeDialog: () => void;
-    createProject: (data: Inputs) => Promise<Project>;
-    addLinksToProject: (id: string, linkIds: string[]) => Promise<void>;
+    updateProject: any;
 }) => {
     const {
         register,
         handleSubmit,
         reset,
+        setValue,
         // formState: { errors },
     } = useForm<Inputs>({
         defaultValues,
     });
 
-    const links = useAtomValue(linksState);
-    const [selectedLinks, setSelectedLinks] = useState<any[]>([]);
-
-    const onSubmitCreateProject = async (data: Inputs) => {
+    const onSubmitEditProject = async (data: Inputs) => {
         try {
-            const createdProject: any = await createProject(data);
-
-            if (createdProject) {
-                const linksIds = _.map(selectedLinks, (link) => link.id);
-                await addLinksToProject(createdProject.id, linksIds);
-            } else {
-                throw new Error("프로젝트 생성 실패");
-            }
+            await updateProject(dialog.data.id, data);
 
             closeDialog();
         } catch (err) {
@@ -71,9 +48,15 @@ const CreateProjectDialog = ({
     useEffect(() => {
         if (dialog.visible) {
             reset(defaultValues);
-            setSelectedLinks([]);
         }
     }, [dialog.visible, reset]);
+
+    useEffect(() => {
+        if (dialog?.data) {
+            setValue("title", dialog.data.title || "");
+            setValue("description", dialog.data.description || "");
+        }
+    }, [dialog]);
 
     return (
         <Dialog.Root open={dialog.visible}>
@@ -86,12 +69,12 @@ const CreateProjectDialog = ({
                 maxWidth='550px'
                 className='!bg-[#18181b] text-[#ecedee] !shadow-none'
             >
-                <form onSubmit={handleSubmit(onSubmitCreateProject)}>
+                <form onSubmit={handleSubmit(onSubmitEditProject)}>
                     <Flex justify={"between"}>
                         <div>
-                            <Dialog.Title>프로젝트 생성</Dialog.Title>
+                            <Dialog.Title>프로젝트 수정</Dialog.Title>
                             <Dialog.Description size='2' mb='4'>
-                                프로젝트를 생성해 링크를 그룹별로 관리해 보세요.
+                                프로젝트의 이름과 설명을 수정하세요.
                             </Dialog.Description>
                         </div>
                     </Flex>
@@ -120,22 +103,6 @@ const CreateProjectDialog = ({
                                 className='!bg-[#18181b] !text-[#ecedee] shadow-none !ring-1 ring-[#3f3f46]'
                             />
                         </label>
-
-                        <div>
-                            <Text as='div' size='2' mb='1' weight='bold'>
-                                링크 추가
-                            </Text>
-                            <div className='max-h-[300px] overflow-y-auto flex flex-wrap gap-1'>
-                                {links.map((link) => (
-                                    <RadioCard
-                                        key={link.id}
-                                        item={link}
-                                        selectedItems={selectedLinks}
-                                        setSelectedItems={setSelectedLinks}
-                                    />
-                                ))}
-                            </div>
-                        </div>
                     </Flex>
 
                     <Flex gap='3' mt='4' justify='end'>
@@ -155,4 +122,4 @@ const CreateProjectDialog = ({
     );
 };
 
-export default CreateProjectDialog;
+export default EditProjectDialog;

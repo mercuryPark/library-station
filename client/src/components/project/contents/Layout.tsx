@@ -14,7 +14,7 @@ const ProjectContentsLayout = ({
 
     return (
         <div className='col-span-5 p-[1rem] overflow-y-auto'>
-            <div className='flex flex-wrap gap-4'>
+            <div className='grid grid-cols-6 max-2xl:grid-cols-5 max-xl:grid-cols-4 max-lg:grid-cols-3 max-md:grid-cols-2  gap-4'>
                 {_.map(linksByProject, (item: any) => {
                     return (
                         <div

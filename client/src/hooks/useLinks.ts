@@ -29,6 +29,11 @@ const useLinks = (options: UseLinksOptions = {}) => {
     const getLinks = async (bookmarked?: boolean) => {
         try {
             const res: any = await API_LINKS({ bookmarked });
+
+            if (bookmarked) {
+                return res.data;
+            }
+
             setLinks(res.data);
         } catch (error) {
             console.log(error);

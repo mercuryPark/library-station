@@ -4,9 +4,11 @@ import ProjectListOptions from "./Options";
 const ListItem = ({
     project,
     deleteProject,
+    openEditDialog,
 }: {
     project: any;
     deleteProject: (id: string) => void;
+    openEditDialog: (id: string, data: any) => void;
 }) => {
     const navigation = useNavigate();
     return (
@@ -24,6 +26,7 @@ const ListItem = ({
             <ProjectListOptions
                 deleteProject={deleteProject}
                 project={project}
+                openEditDialog={openEditDialog}
             />
         </li>
     );

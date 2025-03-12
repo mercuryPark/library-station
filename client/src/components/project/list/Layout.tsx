@@ -6,13 +6,15 @@ const ProjectListLayout = ({
     projects,
     openDialog,
     deleteProject,
+    openEditDialog,
 }: {
     projects: any;
     openDialog: () => void;
     deleteProject: (id: string) => void;
+    openEditDialog: (id: string, data: any) => void;
 }) => {
     return (
-        <div className='col-span-1 h-full border-r-1 border-gray-700'>
+        <div className='col-span-1  h-full border-r-1 border-gray-700'>
             <div className='flex items-center justify-between w-full  border-b-1 border-gray-600 hover:bg-gray-800'>
                 <button
                     onClick={openDialog}
@@ -29,6 +31,7 @@ const ProjectListLayout = ({
                             key={project.id}
                             project={project}
                             deleteProject={deleteProject}
+                            openEditDialog={openEditDialog}
                         />
                     );
                 })}
