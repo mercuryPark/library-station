@@ -3,17 +3,24 @@ import ProjectListOptions from "./Options";
 
 const ListItem = ({
     project,
+    activeProjectID,
     deleteProject,
     openEditDialog,
 }: {
     project: any;
+    activeProjectID: string | null;
     deleteProject: (id: string) => void;
     openEditDialog: (id: string, data: any) => void;
 }) => {
     const navigation = useNavigate();
     return (
         <li
-            className='cursor-pointer flex text-gray-300 px-4 py-4 items-center justify-between  hover:bg-gray-800 border-b-1 border-gray-700'
+            className={[
+                project.id === activeProjectID && "bg-gray-800 ",
+                "cursor-pointer flex text-gray-300 px-4 py-4 items-center justify-between  hover:bg-gray-800 border-b-1 border-gray-700",
+            ]
+                .filter(Boolean)
+                .join(" ")}
             onClick={() => {
                 navigation(`/project/${project.id}`);
             }}

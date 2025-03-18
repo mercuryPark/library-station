@@ -19,7 +19,12 @@ const useProject = () => {
         data: null,
     });
 
-    const [editDialog, setEditDialog] = useState({
+    const [addLinkDialog, setAddLinkDialog] = useState<any>({
+        visible: false,
+        data: null,
+    });
+
+    const [editDialog, setEditDialog] = useState<any>({
         visible: false,
         data: null,
     });
@@ -40,6 +45,12 @@ const useProject = () => {
         });
     };
 
+    const openAddLinkDialog = (id: string, data: any) => {
+        setAddLinkDialog({
+            visible: true,
+            data: { ...data, id },
+        });
+    };
     const closeDialog = (type: string) => {
         if (type === "project") {
             setCreateDialog({
@@ -48,6 +59,11 @@ const useProject = () => {
             });
         } else if (type === "edit") {
             setEditDialog({
+                visible: false,
+                data: null,
+            });
+        } else if (type === "addLink") {
+            setAddLinkDialog({
                 visible: false,
                 data: null,
             });
@@ -88,8 +104,8 @@ const useProject = () => {
     const deleteProject = async (id: string) => {
         const res: any = await API_DELETE_PROJECT(id);
         if (res) {
-            setProjects((prev) => {
-                return _.filter(prev, (project) => project.id !== id);
+            setLinksByProject((prev) => {
+                return _.filter(prev, (link) => link.id !== id);
             });
         }
     };
@@ -107,15 +123,22 @@ const useProject = () => {
     };
 
     const addLinksToProject = async (id: string, linkIds: string[]) => {
-        return await API_ADD_LINKS_TO_PROJECT(id, linkIds);
+        const res = await API_ADD_LINKS_TO_PROJECT(id, linkIds);
+
+        if (res.data) {
+            setLinksByProject((prev) => [...prev, ...res.data]);
+        }
+
+        return res.data;
     };
 
     const deleteLinkFromProject = async (id: string, linkId: string) => {
         const res = await API_DELETE_LINK_FROM_PROJECT(id, linkId);
 
-        if (res.data) {
-            setProjects((prev) => {
-                return _.filter(prev, (project) => project.id !== id);
+        if (res) {
+            console.log(res);
+            setLinksByProject((prev) => {
+                return _.filter(prev, (link) => link.links.id !== linkId);
             });
         }
     };
@@ -137,9 +160,11 @@ const useProject = () => {
         getProjects,
         openDialog,
         openEditDialog,
+        openAddLinkDialog,
         closeDialog,
         createDialog,
         editDialog,
+        addLinkDialog,
         createProject,
         updateProject,
         deleteProject,

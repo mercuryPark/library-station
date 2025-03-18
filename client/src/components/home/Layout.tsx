@@ -38,6 +38,7 @@ const HomeLayout = () => {
                             }}
                         >
                             <LinkCard
+                                type='link'
                                 link={link}
                                 activeCard={activeCard}
                                 openLinkPage={(link: any) => {

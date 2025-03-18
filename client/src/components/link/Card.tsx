@@ -1,6 +1,6 @@
 import { Link } from "@/types/link";
-import { useState } from "react";
-import { GlobeAltIcon } from "@heroicons/react/24/solid";
+import { Fragment, useState } from "react";
+import { GlobeAltIcon, MinusCircleIcon } from "@heroicons/react/24/solid";
 import { StarIcon } from "@heroicons/react/24/outline";
 import {
     PencilSquareIcon,
@@ -12,17 +12,21 @@ import { AlertDialog, Button, Flex } from "@radix-ui/themes";
 import useLinks from "@/hooks/useLinks";
 
 const LinkCard = ({
+    type = "link",
     link,
     openLinkPage,
     updateLinkPage,
     deleteLinkPage,
     activeCard,
+    deleteLinkFromProject,
 }: {
-    link: Link | null;
+    type: "link" | "project";
+    link: Link | any;
     openLinkPage: any;
     updateLinkPage: any;
     deleteLinkPage: any;
     activeCard: any;
+    deleteLinkFromProject?: any;
 }) => {
     const [loadFavicon, setLoadFavicon] = useState(true);
     const [loadThumbnail, setLoadThumbnail] = useState(true);
@@ -71,12 +75,12 @@ const LinkCard = ({
                 >
                     <div
                         className={[
-                            "absolute size-full left-0 right-0 top-0 bottom-0 px-2.5 py-3 text-white bg-[rgba(0,0,0,0.3)] rounded-lg flex flex-col justify-between truncate",
+                            "absolute size-full left-0 right-0 top-0 bottom-0 py-2.5 px-3 text-white bg-[rgba(0,0,0,0.3)] rounded-lg flex flex-col justify-between truncate",
                         ]
                             .filter(Boolean)
                             .join(" ")}
                     >
-                        <div className='w-full h-full flex flex-col gap-2 justify-start '>
+                        <div className='w-full h-full flex flex-col gap-1 justify-start '>
                             <h1 className='font-bold text-lg truncate'>
                                 {link?.title}
                             </h1>
@@ -132,7 +136,8 @@ const LinkCard = ({
                         <div>
                             <div className='w-full flex justify-between gap-2 truncate'>
                                 <div className='shrink'>
-                                    {loadFavicon ? (
+                                    {loadFavicon &&
+                                    link?.og_data.favicon !== null ? (
                                         <img
                                             className='h-5 w-5 object-contain rounded-lg'
                                             src={link?.og_data.favicon}
@@ -148,85 +153,107 @@ const LinkCard = ({
 
                                 <div className='flex items-center'>
                                     <div className='flex gap-3 items-center'>
-                                        <button
-                                            onClick={() => {
-                                                addBookmark(link);
-                                            }}
-                                            className='cursor-pointer hover:text-gray-300'
-                                        >
-                                            {link?.bookmark ? (
-                                                <StarIcon
-                                                    fill='#ffd400'
-                                                    stroke='#ffd400'
-                                                    width={18}
-                                                    height={18}
-                                                />
-                                            ) : (
-                                                <StarIcon
-                                                    width={18}
-                                                    height={18}
-                                                />
-                                            )}
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                updateLinkPage(link);
-                                            }}
-                                            className='cursor-pointer hover:text-gray-300'
-                                        >
-                                            <PencilSquareIcon
-                                                width={18}
-                                                height={18}
-                                            />
-                                        </button>
-                                        <button className='cursor-pointer hover:text-gray-300'>
-                                            <AlertDialog.Root>
-                                                <AlertDialog.Trigger>
-                                                    <TrashIcon
+                                        {type === "link" && (
+                                            <Fragment>
+                                                <button
+                                                    onClick={() => {
+                                                        addBookmark(link);
+                                                    }}
+                                                    className='cursor-pointer hover:text-gray-300'
+                                                >
+                                                    {link?.bookmark ? (
+                                                        <StarIcon
+                                                            fill='#ffd400'
+                                                            stroke='#ffd400'
+                                                            width={18}
+                                                            height={18}
+                                                        />
+                                                    ) : (
+                                                        <StarIcon
+                                                            width={18}
+                                                            height={18}
+                                                        />
+                                                    )}
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        updateLinkPage(link);
+                                                    }}
+                                                    className='cursor-pointer hover:text-gray-300'
+                                                >
+                                                    <PencilSquareIcon
                                                         width={18}
                                                         height={18}
                                                     />
-                                                </AlertDialog.Trigger>
-                                                <AlertDialog.Content maxWidth='450px'>
-                                                    <AlertDialog.Title>
-                                                        링크 삭제
-                                                    </AlertDialog.Title>
-                                                    <AlertDialog.Description size='2'>
-                                                        삭제된 링크는
-                                                        보존되지않습니다. 링크를
-                                                        삭제하시겠습니까?
-                                                    </AlertDialog.Description>
+                                                </button>
 
-                                                    <Flex
-                                                        gap='3'
-                                                        mt='4'
-                                                        justify='end'
-                                                    >
-                                                        <AlertDialog.Cancel>
-                                                            <Button
-                                                                variant='soft'
-                                                                color='gray'
+                                                <button className='cursor-pointer hover:text-gray-300'>
+                                                    <AlertDialog.Root>
+                                                        <AlertDialog.Trigger>
+                                                            <TrashIcon
+                                                                width={18}
+                                                                height={18}
+                                                            />
+                                                        </AlertDialog.Trigger>
+                                                        <AlertDialog.Content maxWidth='450px'>
+                                                            <AlertDialog.Title>
+                                                                링크 삭제
+                                                            </AlertDialog.Title>
+                                                            <AlertDialog.Description size='2'>
+                                                                삭제된 링크는
+                                                                보존되지않습니다.
+                                                                링크를
+                                                                삭제하시겠습니까?
+                                                            </AlertDialog.Description>
+
+                                                            <Flex
+                                                                gap='3'
+                                                                mt='4'
+                                                                justify='end'
                                                             >
-                                                                취소
-                                                            </Button>
-                                                        </AlertDialog.Cancel>
-                                                        <AlertDialog.Action>
-                                                            <Button
-                                                                variant='solid'
-                                                                color='red'
-                                                                onClick={() => {
-                                                                    deleteLinkPage(
-                                                                        link
-                                                                    );
-                                                                }}
-                                                            >
-                                                                삭제
-                                                            </Button>
-                                                        </AlertDialog.Action>
-                                                    </Flex>
-                                                </AlertDialog.Content>
-                                            </AlertDialog.Root>
-                                        </button>
+                                                                <AlertDialog.Cancel>
+                                                                    <Button
+                                                                        variant='soft'
+                                                                        color='gray'
+                                                                    >
+                                                                        취소
+                                                                    </Button>
+                                                                </AlertDialog.Cancel>
+                                                                <AlertDialog.Action>
+                                                                    <Button
+                                                                        variant='solid'
+                                                                        color='red'
+                                                                        onClick={() => {
+                                                                            deleteLinkPage(
+                                                                                link
+                                                                            );
+                                                                        }}
+                                                                    >
+                                                                        삭제
+                                                                    </Button>
+                                                                </AlertDialog.Action>
+                                                            </Flex>
+                                                        </AlertDialog.Content>
+                                                    </AlertDialog.Root>
+                                                </button>
+                                            </Fragment>
+                                        )}
+
+                                        {type === "project" && (
+                                            <button
+                                                onClick={() => {
+                                                    deleteLinkFromProject(
+                                                        link.id
+                                                    );
+                                                }}
+                                                className='cursor-pointer text-red-500 hover:text-red-600'
+                                            >
+                                                <MinusCircleIcon
+                                                    width={22}
+                                                    height={22}
+                                                />
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
