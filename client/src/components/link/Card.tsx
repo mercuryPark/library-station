@@ -225,7 +225,7 @@ const LinkCard = ({
                                                                         color='red'
                                                                         onClick={() => {
                                                                             deleteLinkPage(
-                                                                                link
+                                                                                link.id
                                                                             );
                                                                         }}
                                                                     >

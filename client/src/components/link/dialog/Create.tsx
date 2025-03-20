@@ -23,6 +23,8 @@ const defaultValues: Inputs = {
     bookmark: false,
 };
 
+const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+
 const CreateLinkDialog = () => {
     const [thumbnailImage, setThumbnailImage] = useState<string | null>(null);
     const {
@@ -30,7 +32,7 @@ const CreateLinkDialog = () => {
         handleSubmit,
         watch,
         reset,
-        // formState: { errors },
+        formState: { errors },
     } = useForm<Inputs>({
         defaultValues,
     });
@@ -112,7 +114,7 @@ const CreateLinkDialog = () => {
                             </div>
                             <TextField.Root
                                 {...register("title", { required: true })}
-                                placeholder='Enter your full name'
+                                placeholder='라이브러리 이름을 입력하세요'
                                 className='!bg-[#18181b] !text-[#ecedee] shadow-none !ring-1 ring-[#3f3f46]'
                             />
                         </label>
@@ -130,20 +132,42 @@ const CreateLinkDialog = () => {
                                 </button>
                             </div>
                             <TextField.Root
-                                {...register("official", { required: true })}
-                                placeholder='Enter your full name'
+                                {...register("official", {
+                                    required:
+                                        "공식 레퍼런스 URL을 입력해주세요",
+                                    pattern: {
+                                        value: urlPattern,
+                                        message: "올바른 URL 형식이 아닙니다",
+                                    },
+                                })}
+                                placeholder='https://example.com'
                                 className='!bg-[#18181b] !text-[#ecedee] shadow-none !ring-1 ring-[#3f3f46] [&_input]:!bg-[#18181b] [&_input]:!text-[#ecedee] [&_input:autofill]:!bg-[#18181b] [&_input:autofill]:!text-[#ecedee] [&_input:-webkit-autofill]:!bg-[#18181b] [&_input:-webkit-autofill]:!text-[#ecedee] [&_input:-webkit-autofill]:!box-shadow-[0_0_0_30px_#18181b_inset] [&_input:-webkit-autofill]:!-webkit-text-fill-color-[#ecedee]'
                             />
+                            {errors.official && (
+                                <Text as='div' color='red' size='1' mt='1'>
+                                    {errors.official.message}
+                                </Text>
+                            )}
                         </label>
                         <label>
                             <Text as='div' size='2' mb='1' weight='bold'>
                                 패키지 관리자
                             </Text>
                             <TextField.Root
-                                {...register("package")}
-                                placeholder='Enter your email'
+                                {...register("package", {
+                                    pattern: {
+                                        value: urlPattern,
+                                        message: "올바른 URL 형식이 아닙니다",
+                                    },
+                                })}
+                                placeholder='https://www.npmjs.com/package/example'
                                 className='!bg-[#18181b] !text-[#ecedee] shadow-none !ring-1 ring-[#3f3f46] [&_input]:!bg-[#18181b] [&_input]:!text-[#ecedee] [&_input:autofill]:!bg-[#18181b] [&_input:autofill]:!text-[#ecedee] [&_input:-webkit-autofill]:!bg-[#18181b] [&_input:-webkit-autofill]:!text-[#ecedee] [&_input:-webkit-autofill]:!box-shadow-[0_0_0_30px_#18181b_inset] [&_input:-webkit-autofill]:!-webkit-text-fill-color-[#ecedee]'
                             />
+                            {errors.package && (
+                                <Text as='div' color='red' size='1' mt='1'>
+                                    {errors.package.message}
+                                </Text>
+                            )}
                         </label>
 
                         <label>
@@ -151,10 +175,20 @@ const CreateLinkDialog = () => {
                                 Github
                             </Text>
                             <TextField.Root
-                                {...register("github")}
-                                placeholder='Enter your email'
+                                {...register("github", {
+                                    pattern: {
+                                        value: urlPattern,
+                                        message: "올바른 URL 형식이 아닙니다",
+                                    },
+                                })}
+                                placeholder='https://github.com/example/repo'
                                 className='!bg-[#18181b] !text-[#ecedee] shadow-none !ring-1 ring-[#3f3f46] [&_input]:!bg-[#18181b] [&_input]:!text-[#ecedee] [&_input:autofill]:!bg-[#18181b] [&_input:autofill]:!text-[#ecedee] [&_input:-webkit-autofill]:!bg-[#18181b] [&_input:-webkit-autofill]:!text-[#ecedee] [&_input:-webkit-autofill]:!box-shadow-[0_0_0_30px_#18181b_inset] [&_input:-webkit-autofill]:!-webkit-text-fill-color-[#ecedee]'
                             />
+                            {errors.github && (
+                                <Text as='div' color='red' size='1' mt='1'>
+                                    {errors.github.message}
+                                </Text>
+                            )}
                         </label>
 
                         <label className='flex items-center gap-2'>

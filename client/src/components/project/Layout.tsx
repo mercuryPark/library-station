@@ -11,6 +11,7 @@ const ProjectLayout = () => {
     const {
         projects,
         getProjects,
+        setLinksByProject,
         openDialog,
         openEditDialog,
         createDialog,
@@ -37,6 +38,9 @@ const ProjectLayout = () => {
         if (id) {
             getLinksByProject(id);
             setActiveProjectID(id);
+        } else {
+            setActiveProjectID(null);
+            setLinksByProject([]);
         }
     }, [id]);
 

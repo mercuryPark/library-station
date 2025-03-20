@@ -11,8 +11,11 @@ import {
 import { useEffect, useState } from "react";
 import useLinks from "./useLinks";
 import _ from "lodash";
+import { useNavigate } from "react-router-dom";
+
 const useProject = () => {
     const { links, getLinks } = useLinks();
+    const navigate = useNavigate();
     const [projects, setProjects] = useState<any[]>([]);
     const [createDialog, setCreateDialog] = useState({
         visible: false,
@@ -79,6 +82,7 @@ const useProject = () => {
         const res = await API_CREATE_PROJECT(data);
 
         if (res.data) {
+            navigate(`/project/${res.data.id}`);
             setProjects((prev) => {
                 return [res.data, ...prev];
             });
@@ -103,9 +107,11 @@ const useProject = () => {
 
     const deleteProject = async (id: string) => {
         const res: any = await API_DELETE_PROJECT(id);
+
         if (res) {
-            setLinksByProject((prev) => {
-                return _.filter(prev, (link) => link.id !== id);
+            navigate("/project");
+            setProjects((prev) => {
+                return _.filter(prev, (pj) => pj.id !== id);
             });
         }
     };
@@ -157,6 +163,7 @@ const useProject = () => {
     return {
         projects,
         linksByProject,
+        setLinksByProject,
         getProjects,
         openDialog,
         openEditDialog,
