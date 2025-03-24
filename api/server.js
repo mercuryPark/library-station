@@ -25,6 +25,15 @@ app.use("/links", require("./routes/links"));
 app.use("/projects", require("./routes/projects"));
 app.use("/test", require("./routes/test"));
 
-app.listen(process.env.PORT, () => {
-    console.log(`Server running on port ${process.env.PORT}`);
+// Health check endpoint
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: "ok" });
 });
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
+
+// Vercel serverless function export
+module.exports = app;
