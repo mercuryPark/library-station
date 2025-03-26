@@ -5,12 +5,20 @@ const supabase = require("./supabase/client");
 const app = express();
 
 const corsOptions = {
-    origin: [
-        "https://library-station.vercel.app",
-        // 개발 환경을 위한 로컬호스트 허용
-        "http://localhost:5173",
-        "http://localhost:3000",
-    ],
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+            "https://library-station.vercel.app",
+            "http://localhost:5173",
+            "http://localhost:3000",
+        ];
+
+        // origin이 undefined인 경우는 같은 출처의 요청
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
