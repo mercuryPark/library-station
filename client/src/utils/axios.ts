@@ -5,16 +5,8 @@ import axios from "axios";
 
 const defaultOptions = {
     baseURL: import.meta.env.VITE_API_URL,
-    // baseURL: "/api",
     headers: {
         "Content-Type": "application/json",
-        // "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-        // "Accept-Encoding": "identity",
-        "Access-Control-Allow-Origin": "*",
-        // "Access-Control-Allow-Headers":
-        //     "authorization, x-client-info, apikey, content-type, prefer, content-profile",
-        // "Access-Control-Allow-Methods": "GET",
-        // Accept: 'application/json',
     },
     withCredentials: true, // CORS credentials 처리를 위해 필요
 };
