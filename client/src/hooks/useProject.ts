@@ -142,7 +142,6 @@ const useProject = () => {
         const res = await API_DELETE_LINK_FROM_PROJECT(id, linkId);
 
         if (res) {
-            console.log(res);
             setLinksByProject((prev) => {
                 return _.filter(prev, (link) => link.links.id !== linkId);
             });

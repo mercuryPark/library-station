@@ -20,7 +20,6 @@ const SideBar = () => {
     const navigation = useNavigate();
     const [, setCreateDialog] = useAtom(creatDialogState);
 
-    console.log(user);
     const menu = [
         {
             label: "Home",
