@@ -32,7 +32,7 @@ export default function LoginButton() {
                 </button>
             ) : (
                 <div className='text-white ring-1 ring-white/20 rounded-md px-4 py-2 bg-white/5 backdrop-blur-sm'>
-                    현재 로그인상태입니다.
+                    현재 로그인 상태입니다.
                 </div>
             )}
         </div>
