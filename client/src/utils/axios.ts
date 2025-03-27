@@ -1,5 +1,6 @@
 // * import libraries
 import axios from "axios";
+import { supabase } from "@/lib/supabase";
 
 // * etc
 
@@ -15,9 +16,13 @@ const axiosClient = axios.create(defaultOptions);
 
 // 요청 인터셉터
 axiosClient.interceptors.request.use(
-    (config) => {
-        // 토큰이 있다면 헤더에 추가
-        const token = localStorage.getItem("token");
+    async (config) => {
+        // Supabase 세션에서 토큰 가져오기
+        const {
+            data: { session },
+        } = await supabase.auth.getSession();
+        const token = session?.access_token;
+
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -52,9 +57,9 @@ axiosClient.interceptors.response.use(
         // 에러 상태 코드별 처리
         switch (response.status) {
             case 401: // 인증 에러
-                // 토큰 만료 등의 처리
-                localStorage.removeItem("token");
-                // window.location.href = '/login';
+                // 토큰이 만료되었거나 유효하지 않은 경우
+                await supabase.auth.signOut();
+                window.location.href = "/login";
                 break;
 
             case 403: // 권한 에러

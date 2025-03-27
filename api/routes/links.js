@@ -4,6 +4,11 @@ const supabase = require("../supabase/client");
 const ogs = require("open-graph-scraper");
 const crypto = require("crypto");
 
+const authMiddleware = require("../middleware/auth");
+
+// 모든 라우트에 인증 미들웨어 적용
+router.use(authMiddleware);
+
 const fetchOgData = async (urls) => {
     const { official } = urls;
     const options = { url: official };
@@ -30,12 +35,15 @@ const fetchOgData = async (urls) => {
     }
 };
 
-// 전체 링크 조회
+// 전체 링크 조회 - 사용자별 필터링 추가
 router.get("/", async (req, res) => {
     const { bookmarked } = req.query;
+    const userId = req.user.id; // 인증된 사용자 ID
+
     let query = supabase
         .from("links")
         .select("*")
+        .eq("user_id", userId) // 사용자별 필터링
         .order("updated_at", { ascending: false });
 
     // bookmarked 쿼리 파라미터가 'true'일 경우 북마크된 항목만 필터링
@@ -47,20 +55,30 @@ router.get("/", async (req, res) => {
     error ? res.status(500).json(error) : res.json(data);
 });
 
-// 특정 링크 조회
+// 특정 링크 조회 - 사용자 권한 확인 추가
 router.get("/:id", async (req, res) => {
+    const userId = req.user.id;
+
     const { data, error } = await supabase
         .from("links")
         .select("*")
         .eq("id", req.params.id)
+        .eq("user_id", userId) // 해당 사용자의 링크만 조회
         .single();
 
-    data ? res.json(data) : res.status(404).json(error);
+    if (error) {
+        return res
+            .status(404)
+            .json({ error: "Link not found or unauthorized" });
+    }
+
+    res.json(data);
 });
 
-// 새 링크 생성
+// 새 링크 생성 - 사용자 ID 포함
 router.post("/", async (req, res) => {
     const { urls } = req.body;
+    const userId = req.user.id;
 
     if (!urls) {
         return res.status(400).json({ error: "URL is required" });
@@ -77,7 +95,8 @@ router.post("/", async (req, res) => {
         const newLink = {
             ...req.body,
             id: uniqueId,
-            bookmark: req.body.bookmark,
+            user_id: userId, // 사용자 ID 추가
+            bookmark: req.body.bookmark || false,
             og_data: {
                 title: ogData.title,
                 thumbnail_url: ogData.image,
@@ -88,7 +107,6 @@ router.post("/", async (req, res) => {
             updated_at: new Date(),
         };
 
-        // 트랜잭션 시작
         const { data, error } = await supabase
             .from("links")
             .insert([newLink])
@@ -108,9 +126,23 @@ router.post("/", async (req, res) => {
     }
 });
 
-// 링크 업데이트
+// 링크 업데이트 - 사용자 권한 확인 추가
 router.put("/:id", async (req, res) => {
+    const userId = req.user.id;
     const { urls } = req.body;
+
+    // 링크 소유권 확인
+    const { data: existingLink } = await supabase
+        .from("links")
+        .select("user_id")
+        .eq("id", req.params.id)
+        .single();
+
+    if (!existingLink || existingLink.user_id !== userId) {
+        return res
+            .status(403)
+            .json({ error: "Unauthorized to update this link" });
+    }
 
     // Open Graph 데이터 추출
     const ogData = await fetchOgData(urls);
@@ -131,33 +163,55 @@ router.put("/:id", async (req, res) => {
         .from("links")
         .update([updateLink])
         .eq("id", req.params.id)
+        .eq("user_id", userId) // 사용자 확인
         .select();
 
     error ? res.status(400).json(error) : res.json(data[0]);
 });
 
-// 링크 삭제
+// 링크 삭제 - 사용자 권한 확인 추가
 router.delete("/:id", async (req, res) => {
+    const userId = req.user.id;
+
+    // 링크 소유권 확인
+    const { data: existingLink } = await supabase
+        .from("links")
+        .select("user_id")
+        .eq("id", req.params.id)
+        .single();
+
+    if (!existingLink || existingLink.user_id !== userId) {
+        return res
+            .status(403)
+            .json({ error: "Unauthorized to delete this link" });
+    }
+
     const { error } = await supabase
         .from("links")
         .delete()
-        .eq("id", req.params.id);
+        .eq("id", req.params.id)
+        .eq("user_id", userId); // 사용자 확인
 
     error ? res.status(400).json(error) : res.json({ success: true });
 });
 
-// 북마크 토글
+// 북마크 토글 - 사용자 권한 확인 추가
 router.patch("/:id/bookmark", async (req, res) => {
+    const userId = req.user.id;
+
     try {
-        // 현재 링크 정보 조회
+        // 현재 링크 정보 조회 및 권한 확인
         const { data: currentLink, error: fetchError } = await supabase
             .from("links")
-            .select("bookmark")
+            .select("bookmark, user_id")
             .eq("id", req.params.id)
+            .eq("user_id", userId) // 사용자 확인
             .single();
 
-        if (fetchError) {
-            return res.status(404).json({ error: "Link not found" });
+        if (fetchError || !currentLink) {
+            return res
+                .status(404)
+                .json({ error: "Link not found or unauthorized" });
         }
 
         // 북마크 상태 토글
@@ -168,6 +222,7 @@ router.patch("/:id/bookmark", async (req, res) => {
                 updated_at: new Date(),
             })
             .eq("id", req.params.id)
+            .eq("user_id", userId) // 사용자 확인
             .select();
 
         if (updateError) {
