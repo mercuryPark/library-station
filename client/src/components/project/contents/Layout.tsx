@@ -2,7 +2,7 @@ import useLinks from "@/hooks/useLinks";
 import { Link } from "@/types/link";
 import _ from "lodash";
 import { useState } from "react";
-import LinkCard from "@/components/link/Card";
+import LinkCard from "@/assets/common/Card";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { PlusIcon } from "@heroicons/react/24/solid";
 

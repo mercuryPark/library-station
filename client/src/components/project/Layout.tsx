@@ -31,7 +31,9 @@ const ProjectLayout = () => {
     const [activeProjectID, setActiveProjectID] = useState<string | null>(null);
 
     useEffect(() => {
-        getProjects();
+        if (!projects || projects?.length === 0) {
+            getProjects();
+        }
     }, []);
 
     useEffect(() => {

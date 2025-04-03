@@ -11,15 +11,11 @@ import { LinkDialog } from "@/types/dialog";
 import { Link } from "@/types/link";
 import { useAtom, useAtomValue } from "jotai";
 import _ from "lodash";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-interface UseLinksOptions {
-    setLoading?: (loading: boolean) => void;
-}
-
-const useLinks = (options: UseLinksOptions = {}) => {
-    const { setLoading } = options;
-
+const useLinks = () => {
+    const [loading, setLoading] = useState(false);
     const [links, setLinks]: any = useAtom<any>(linksState);
     const filteredLinks: any = useAtomValue<any>(filteredLinksState);
     const [, setEditDialog]: any = useAtom<LinkDialog>(editDialogState);
@@ -27,6 +23,7 @@ const useLinks = (options: UseLinksOptions = {}) => {
     const navigation = useNavigate();
     // 링크 가져오기
     const getLinks = async (bookmarked?: boolean) => {
+        setLoading(true);
         try {
             const res: any = await API_LINKS({ bookmarked });
 
@@ -169,7 +166,16 @@ const useLinks = (options: UseLinksOptions = {}) => {
         }
     };
 
+    // 링크 추가 dialog 열기
+    const openAddDialog = () => {
+        setCreatDialog({
+            visible: true,
+            data: null,
+        });
+    };
+
     return {
+        loading,
         links,
         filteredLinks,
         setLinks,
@@ -180,6 +186,7 @@ const useLinks = (options: UseLinksOptions = {}) => {
         openLink,
         openEditDialog,
         addBookmark,
+        openAddDialog,
     };
 };
 

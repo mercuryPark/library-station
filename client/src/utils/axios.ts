@@ -17,7 +17,12 @@ const axiosClient = axios.create(defaultOptions);
 // 요청 인터셉터
 axiosClient.interceptors.request.use(
     async (config) => {
-        // Supabase 세션에서 토큰 가져오기
+        // 개발 환경에서는 토큰 처리 생략
+        if (import.meta.env.VITE_DEPLOY_ENV === "development") {
+            return config;
+        }
+
+        // 프로덕션 환경에서는 정상적으로 토큰 처리
         const {
             data: { session },
         } = await supabase.auth.getSession();
@@ -57,7 +62,9 @@ axiosClient.interceptors.response.use(
         // 에러 상태 코드별 처리
         switch (response.status) {
             case 401: // 인증 에러
-                // 토큰이 만료되었거나 유효하지 않은 경우
+                // 로컬 토큰이 있다면 제거
+                localStorage.removeItem("localToken");
+                // Supabase 로그아웃
                 await supabase.auth.signOut();
                 window.location.href = "/login";
                 break;

@@ -1,11 +1,35 @@
 const supabase = require("../supabase/client");
 
+// 테스트용 더미 유저 데이터
+const TEST_USER = {
+    id: "1d519be6-ff7f-4718-a2e3-141831a6d6eb", // 실제 존재하는 사용자 ID
+    email: "test@test.com",
+    user_metadata: {
+        full_name: "Test User",
+    },
+};
+
 const authMiddleware = async (req, res, next) => {
     try {
-        // Authorization 헤더에서 토큰 추출
-        const token = req.headers.authorization?.split(" ")[1];
+        // 개발 환경에서는 토큰 검증 건너뛰기
+        if (process.env.NODE_ENV === "development") {
+            // 실제 존재하는 사용자 확인
+            const { data: users, error } = await supabase
+                .from("users")
+                .select("id")
+                .limit(1)
+                .single();
 
-        console.log(token);
+            if (users) {
+                TEST_USER.id = users.id; // 실제 사용자 ID로 업데이트
+            }
+
+            req.user = TEST_USER;
+            return next();
+        }
+
+        // 프로덕션 환경에서는 정상적으로 토큰 검증
+        const token = req.headers.authorization?.split(" ")[1];
 
         if (!token) {
             return res.status(401).json({
@@ -13,13 +37,10 @@ const authMiddleware = async (req, res, next) => {
             });
         }
 
-        // Supabase 토큰 검증
         const {
             data: { user },
             error,
         } = await supabase.auth.getUser(token);
-
-        console.log(user);
 
         if (error || !user) {
             return res.status(401).json({
@@ -27,7 +48,6 @@ const authMiddleware = async (req, res, next) => {
             });
         }
 
-        // 사용자 정보를 요청 객체에 추가
         req.user = user;
         next();
     } catch (error) {

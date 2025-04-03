@@ -200,10 +200,19 @@ const LinkCard = ({
                                                                 링크 삭제
                                                             </AlertDialog.Title>
                                                             <AlertDialog.Description size='2'>
-                                                                삭제된 링크는
-                                                                보존되지않습니다.
-                                                                링크를
-                                                                삭제하시겠습니까?
+                                                                <div className='flex flex-col gap-2 text-base'>
+                                                                    삭제된
+                                                                    링크는
+                                                                    보존되지않습니다.
+                                                                    링크를
+                                                                    삭제하시겠습니까?
+                                                                    <span className='text-red-400 text-xs font-bold'>
+                                                                        해당
+                                                                        링크는
+                                                                        프로젝트에서도
+                                                                        삭제됩니다.
+                                                                    </span>
+                                                                </div>
                                                             </AlertDialog.Description>
 
                                                             <Flex

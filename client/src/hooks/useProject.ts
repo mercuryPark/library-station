@@ -12,11 +12,13 @@ import { useEffect, useState } from "react";
 import useLinks from "./useLinks";
 import _ from "lodash";
 import { useNavigate } from "react-router-dom";
+import { useAtom } from "jotai";
+import { projectLinksState } from "@/state/links";
 
 const useProject = () => {
     const { links, getLinks } = useLinks();
     const navigate = useNavigate();
-    const [projects, setProjects] = useState<any[]>([]);
+    const [projects, setProjects] = useAtom<any>(projectLinksState);
     const [createDialog, setCreateDialog] = useState({
         visible: false,
         data: null,
@@ -83,7 +85,7 @@ const useProject = () => {
 
         if (res.data) {
             navigate(`/project/${res.data.id}`);
-            setProjects((prev) => {
+            setProjects((prev: any) => {
                 return [res.data, ...prev];
             });
         }
@@ -94,8 +96,8 @@ const useProject = () => {
     const updateProject = async (id: string, data: any) => {
         const res = await API_UPDATE_PROJECT(id, data);
 
-        setProjects((prev) => {
-            return prev.map((project) => {
+        setProjects((prev: any) => {
+            return prev.map((project: any) => {
                 if (project.id === id) {
                     return res;
                 }
@@ -110,8 +112,8 @@ const useProject = () => {
 
         if (res) {
             navigate("/project");
-            setProjects((prev) => {
-                return _.filter(prev, (pj) => pj.id !== id);
+            setProjects((prev: any) => {
+                return _.filter(prev, (pj: any) => pj.id !== id);
             });
         }
     };
